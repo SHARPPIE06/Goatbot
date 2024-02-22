@@ -53,7 +53,7 @@ mentions: __
 module.exports = {
 config: {
  name: "ai",
-aliases: [],
+aliases: ["Athena"],
 version: 1.6,
 author: "Jun",
 role: 0,
