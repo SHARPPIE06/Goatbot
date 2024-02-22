@@ -59,7 +59,7 @@ author: "Jun",
 role: 0,
  shortDescription: "An AI that can do various tasks",
  guide: "{pn} <query>",
- category: "AI"
+ category: "AI","Athena"
  },
  onStart: function() {},
  onChat: ai
