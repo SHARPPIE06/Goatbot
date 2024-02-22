@@ -52,14 +52,14 @@ mentions: __
 }
 module.exports = {
 config: {
- name: "ai","Athena"
+ name: "ai",
 aliases: ["Athena"],
 version: 1.6,
 author: "Jun",
 role: 0,
  shortDescription: "An AI that can do various tasks",
  guide: "{pn} <query>",
- category: "AI","Athena"
+ category: "AI",
  },
  onStart: function() {},
  onChat: ai
