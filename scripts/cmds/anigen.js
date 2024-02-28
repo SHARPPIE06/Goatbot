@@ -1,60 +1,48 @@
 const fs = require("fs");
+const path = require("path");
 const axios = require("axios");
 
 module.exports = {
   config: {
     name: "anigen",
     aliases: [],
-    author: "kshitiz",
+    author: "Kshitiz",
     version: "1.0",
-    cooldowns: 5,
+    cooldowns: 20,
     role: 0,
-    shortDescription: {
-      en: ""
-    },
-    longDescription: {
-      en: "generate an anime image based on a prompt"
-    },
-    category: "𝗠𝗘𝗗𝗜𝗔",
-    guide: {
-      en: "[userprompt]"
-    }
+    shortDescription: "Generate an image .",
+    longDescription: "Generates an image ",
+    category: "fun",
+    guide: "{p}anigen <prompt>",
   },
-  onStart: async function ({ api, event, args }) {
-    let path = __dirname + "/cache/anime.png";
-    let userPrompt;
-
-    if (args.length === 0) {
-      return api.sendMessage("Please provide a prompt for generating an anime image.", event.threadID, event.messageID);
-    } else {
-      userPrompt = args.join(" ");
-    }
-
-    let tid = event.threadID;
-    let mid = event.messageID;
-
+  onStart: async function ({ message, args, api, event }) {
+     api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
     try {
-      api.sendMessage("⏳ Generating anime image... please wait, it will take time.", tid, mid);
+      const prompt = args.join(" ");
+      const emiApiUrl = "https://ai-tools.replit.app/emi";
 
-      let enctxt = encodeURIComponent(userPrompt);
-      let url = `https://t2i.onrender.com/kshitiz?prompt=${enctxt}`;
+      const emiResponse = await axios.get(emiApiUrl, {
+        params: {
+          prompt: prompt
+        },
+        responseType: "arraybuffer"
+      });
 
-      let response = await axios.get(url);
-
-      if (response.data.imageUrl) {
-        let imageUrl = response.data.imageUrl;
-
-        let imageResponse = await axios.get(imageUrl, { responseType: "stream" });
-        imageResponse.data.pipe(fs.createWriteStream(path));
-
-        imageResponse.data.on("end", () => {
-          api.sendMessage({ attachment: fs.createReadStream(path) }, tid, () => fs.unlinkSync(path), mid);
-        });
-      } else {
-        return api.sendMessage("Failed to fetch anime image. Please try again.", tid, mid);
+      const cacheFolderPath = path.join(__dirname, "/cache");
+      if (!fs.existsSync(cacheFolderPath)) {
+        fs.mkdirSync(cacheFolderPath);
       }
-    } catch (e) {
-      return api.sendMessage(e.message, tid, mid);
+      const imagePath = path.join(cacheFolderPath, `${Date.now()}_generated_image.png`);
+      fs.writeFileSync(imagePath, Buffer.from(emiResponse.data, "binary"));
+
+      const stream = fs.createReadStream(imagePath);
+      message.reply({
+        body: "",
+        attachment: stream
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      message.reply("❌ | An error occurred. Please try again later.");
     }
   }
 };
