@@ -1,34 +1,6 @@
 const axios = require('axios');
  
 const Prefixes = [
-   'bard',
-  '/bard',
-  'ask',
-  '.chi',
-  '露sammy',
-  '_nano',
-  'nano',
-  'ai',
-  '.ask',
-  '/ask',
-  '!ask',
-  '@ask',
-  '#ask',
-  '$ask',
-  '%ask',
-  '^ask',
-  '*ask',
-  '.ai',
-  '/ai',
-  '!ai',
-  '@ai',
-  '#ai',
-  '$ai',
-  '%ai',
-  '^ai',
-  '*ai',
-  '-ai',
-  '饾懆饾拪 ',
 'athena'
 ];
  
