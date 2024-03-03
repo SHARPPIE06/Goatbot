@@ -6,7 +6,7 @@
  author: "Loufi",
  role: 0,
  shortDescription: {
- en: "Top 15 Rich Users"
+ en: "Top 15 na richkid"
  },
  longDescription: {
  en: ""
