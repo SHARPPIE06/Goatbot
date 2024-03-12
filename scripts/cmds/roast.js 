@@ -1,0 +1,58 @@
+const axios = require('axios');
+
+module.exports = {
+  config: {
+    name: 'roast',
+    version: '1.0',
+    author: 'Harley',
+    countDown: 5,
+    role: 0,
+    category: 'fun',
+    shortDescription: {
+      en: 'Sends a random roast.'
+    },
+    longDescription: {
+      en: 'Use this command to roast someone.'
+    },
+    guide: {
+      en: '{pn} roast @mention'
+    }
+  },
+  onStart: async function ({ api, event, args }) {
+    try {
+      const mention = Object.keys(event.mentions);
+      const response = await axios.get('https://evilinsult.com/generate_insult.php?lang=en&type=json');
+
+      if (response.status !== 200 || !response.data || !response.data.insult) {
+        throw new Error('Invalid response or no insult found');
+      }
+
+      const insult = response.data.insult;
+      let message = insult;
+
+      if (mention.length === 1) {
+        const mentionName = event.mentions[mention[0]].replace('@', '');
+        message = `${mentionName}, ${insult} 🔥`;
+      }
+
+      const attachment = await api.sendMessage({
+        body: message,
+        mentions: mention.map(mentionID => ({
+          tag: event.mentions[mentionID],
+          id: mentionID,
+          fromIndex: message.indexOf('@' + event.mentions[mentionID].replace('@', '')),
+          toIndex: message.indexOf('@' + event.mentions[mentionID].replace('@', '')) + event.mentions[mentionID].length,
+        })),
+      }, event.threadID, event.messageID);
+
+      if (!attachment || !attachment.messageID) {
+        throw new Error('Failed to send message');
+      }
+
+      console.log(`Sent`);
+    } catch (error) {
+      console.error(`Failed to send roast: ${error.message}`);
+      api.sendMessage('Please try again later.', event.threadID, event.messageID);
+    }
+  }
+};
